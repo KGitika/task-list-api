@@ -22,8 +22,31 @@ def create_task():
     response = new_task.to_dict()
     return response, 201
 
-# def get_task_or_404(task_id):
-#     task = Task.query.get(task_id) #This tries to find a Task in the database with ID If exists return Task object else None
-#     if task is None:
-#         abort(404, description=f"Task with id {task_id} not found")
-#     return task
+@task_bp.get("")
+def get_all_tasks():
+    tasks = Task.query.all()
+    tasks_response = []
+    for task in tasks:
+        tasks_response.append(task.to_dict())
+    return tasks_response
+
+@task_bp.get("/<task_id>")
+def get_one_planet(task_id):
+    task = validate_task(task_id)
+    return task.to_dict()
+
+
+def validate_task(task_id):
+    try:
+        task_id = int(task_id)
+    except ValueError:
+        response = {"message" : f"task {task_id} invalid"}
+        abort(make_response(response, 400))
+
+    task = Task.query.get(task_id)
+    if task is None:
+        message = {
+            "message": f"task ID ({task_id}) not found."
+        }
+        abort(make_response(message, 404))
+    return task
