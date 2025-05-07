@@ -1,6 +1,7 @@
 from flask import Blueprint,make_response, abort, request, Response
 from ..models.task import Task
 from app import db
+from sqlalchemy import asc, desc
 
 task_bp = Blueprint("task", __name__, url_prefix="/tasks")
 
@@ -25,7 +26,16 @@ def create_task():
 
 @task_bp.get("")
 def get_all_tasks():
-    tasks = Task.query.all()
+    sort_param = request.args.get("sort")
+
+    query = db.select(Task)
+    if sort_param == "asc":
+        query = query.order_by(asc(Task.title))
+    elif sort_param == "desc":
+        query = query.order_by(desc(Task.title))
+
+    tasks = db.session.scalars(query) #This executes the SQL query
+
     tasks_response = []
     for task in tasks:
         tasks_response.append(task.to_dict())
