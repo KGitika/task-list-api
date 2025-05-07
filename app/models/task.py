@@ -20,7 +20,7 @@ class Task(db.Model):
     @classmethod
     def from_dict(cls, task_data):
         return cls(
-            title=task_data.get("title"),
-            description=task_data.get("description"),
-            completed_at=task_data.get("completed_at") 
+            title=task_data["title"], # this will raise KeyError if missing
+            description=task_data["description"],
+            completed_at=task_data.get("completed_at") # this will not raise KeyError if missing
         )

@@ -13,13 +13,14 @@ def create_task():
         new_task = Task.from_dict(request_body)
     except KeyError as error:
         message = {
-            "message": f"Missing '{error.args[0]}' attribute"
+            # "message": f"Missing '{error.args[0]}' attribute"
+            "details": "Invalid data"
         }
         abort(make_response(message, 400))
     db.session.add(new_task)
     db.session.commit()
 
-    response = new_task.to_dict()
+    response =  {"task": new_task.to_dict()}
     return response, 201
 
 @task_bp.get("")
@@ -31,9 +32,10 @@ def get_all_tasks():
     return tasks_response
 
 @task_bp.get("/<task_id>")
-def get_one_planet(task_id):
+def get_one_task(task_id):
     task = validate_task(task_id)
-    return task.to_dict()
+    # return task.to_dict()
+    return {"task": task.to_dict()}
 
 
 def validate_task(task_id):
@@ -43,7 +45,11 @@ def validate_task(task_id):
         response = {"message" : f"task {task_id} invalid"}
         abort(make_response(response, 400))
 
-    task = Task.query.get(task_id)
+    # task = Task.query.get(task_id)
+    query = db.select(Task).where(Task.id == task_id)
+    task = db.session.scalar(query)
+    # db.session.get(Task, task_id)
+
     if task is None:
         message = {
             "message": f"task ID ({task_id}) not found."
