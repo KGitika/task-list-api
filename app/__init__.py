@@ -3,6 +3,8 @@ from .db import db, migrate
 from .models import task, goal
 from .routes.task_routes import task_bp
 import os
+from dotenv import load_dotenv
+load_dotenv() #Reads .env file and Loads all key-value pairs into environment
 
 def create_app(config=None):
     app = Flask(__name__)
@@ -22,3 +24,4 @@ def create_app(config=None):
     app.register_blueprint(task_bp)
 
     return app
+
