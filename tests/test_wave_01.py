@@ -63,7 +63,7 @@ def test_get_task_not_found(client):
 
     # raise Exception("Complete test with assertion about response body")
     assert response_body == {
-            "message": "task ID (1) not found."
+            "message": "Task ID (1) not found."
         }
     # *****************************************************************
     # **Complete test with assertion about response body***************
@@ -134,7 +134,7 @@ def test_update_task_not_found(client):
 
     # raise Exception("Complete test with assertion about response body")
     assert response_body == {
-            "message": "task ID (1) not found."
+            "message": "Task ID (1) not found."
         }
     # *****************************************************************
     # **Complete test with assertion about response body***************
@@ -163,7 +163,7 @@ def test_delete_task_not_found(client):
 
     # raise Exception("Complete test with assertion about response body")
     assert response_body == {
-            "message": "task ID (1) not found."
+            "message": "Task ID (1) not found."
         }
     # *****************************************************************
     # **Complete test with assertion about response body***************

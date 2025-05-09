@@ -1,5 +1,6 @@
 from flask import Blueprint,make_response, abort, request, Response
 from ..models.task import Task
+from app.routes.route_utilities import validate_model
 from app import db
 from sqlalchemy import asc, desc
 from datetime import datetime, timezone
@@ -46,34 +47,34 @@ def get_all_tasks():
 
 @task_bp.get("/<task_id>")
 def get_one_task(task_id):
-    task = validate_task(task_id)
+    task = validate_model(Task,task_id)
     # return task.to_dict()
     return {"task": task.to_dict()}
 
 
-def validate_task(task_id):
-    try:
-        task_id = int(task_id)
-    except ValueError:
-        response = {"message" : f"task {task_id} invalid"}
-        abort(make_response(response, 400))
+# def validate_task(task_id):
+#     try:
+#         task_id = int(task_id)
+#     except ValueError:
+#         response = {"message" : f"task {task_id} invalid"}
+#         abort(make_response(response, 400))
 
-    # task = Task.query.get(task_id)
-    query = db.select(Task).where(Task.id == task_id)
-    task = db.session.scalar(query)
-    # db.session.get(Task, task_id)
+#     # task = Task.query.get(task_id)
+#     query = db.select(Task).where(Task.id == task_id)
+#     task = db.session.scalar(query)
+#     # db.session.get(Task, task_id)
 
-    if task is None:
-        message = {
-            "message": f"task ID ({task_id}) not found."
-        }
-        abort(make_response(message, 404))
-    return task
+#     if task is None:
+#         message = {
+#             "message": f"task ID ({task_id}) not found."
+#         }
+#         abort(make_response(message, 404))
+#     return task
 
 @task_bp.put("/<task_id>")
 def update_task(task_id):
 
-    task = validate_task(task_id)
+    task = validate_model(Task,task_id)
 
     request_body = request.get_json()
 
@@ -93,7 +94,7 @@ def update_task(task_id):
 @task_bp.delete("/<task_id>")
 def remove_task(task_id):
 
-    task = validate_task(task_id)
+    task = validate_model(Task,task_id)
 
     db.session.delete(task)
     db.session.commit()
@@ -118,7 +119,7 @@ def send_slack_message(task_title):
 
 @task_bp.patch("/<task_id>/mark_complete")
 def mark_complete(task_id):
-    task = validate_task(task_id)
+    task = validate_model(Task,task_id)
 
     task.completed_at = datetime.now(timezone.utc)
     db.session.commit()
@@ -129,7 +130,7 @@ def mark_complete(task_id):
 
 @task_bp.patch("/<task_id>/mark_incomplete")
 def mark_incomplete(task_id):
-    task = validate_task(task_id)
+    task = validate_model(Task,task_id)
 
     task.completed_at = None
     db.session.commit()
